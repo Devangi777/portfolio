@@ -738,6 +738,21 @@ section:nth-of-type(odd) {
     margin-bottom: 1rem;
 }
 
+.cert-meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: normal;
+    margin-left: 0.5rem;
+}
+
+.cert-id {
+    display: block;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 1rem;
+    font-family: monospace;
+}
+
 .certification-description {
     color: #4b5563;
     margin-bottom: 1.5rem;
