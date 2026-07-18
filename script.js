@@ -196,7 +196,12 @@ const statsObserver = new IntersectionObserver((entries) => {
                 const targetText = stat.textContent.trim();
                 const hasPercent = targetText.includes('%');
                 const finalValue = parseFloat(targetText);
-                animateNumber(stat, 0, finalValue, 2000, hasPercent);
+                
+                // Determine decimal precision dynamically from target text
+                const decimalMatches = targetText.match(/\.(\d+)/);
+                const decimalPlaces = decimalMatches ? decimalMatches[1].length : 0;
+                
+                animateNumber(stat, 0, finalValue, 2000, hasPercent, decimalPlaces);
             });
             // Stop observing to prevent triggering again and corrupting values
             statsObserver.unobserve(entry.target);
@@ -208,16 +213,15 @@ document.querySelectorAll('.about-stats').forEach(stats => {
     statsObserver.observe(stats);
 });
 
-function animateNumber(element, start, end, duration, hasPercent) {
+function animateNumber(element, start, end, duration, hasPercent, decimalPlaces) {
     const startTime = performance.now();
-    const isDecimal = end % 1 !== 0;
     
     function updateNumber(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         const current = start + (end - start) * progress;
-        let formatted = isDecimal ? current.toFixed(2) : Math.floor(current);
+        let formatted = decimalPlaces > 0 ? current.toFixed(decimalPlaces) : Math.floor(current);
         if (hasPercent) {
             formatted += '%';
         }
