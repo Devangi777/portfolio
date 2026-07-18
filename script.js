@@ -193,9 +193,13 @@ const statsObserver = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             const statNumbers = entry.target.querySelectorAll('.stat-item h3');
             statNumbers.forEach(stat => {
-                const finalValue = parseFloat(stat.textContent);
-                animateNumber(stat, 0, finalValue, 2000);
+                const targetText = stat.textContent.trim();
+                const hasPercent = targetText.includes('%');
+                const finalValue = parseFloat(targetText);
+                animateNumber(stat, 0, finalValue, 2000, hasPercent);
             });
+            // Stop observing to prevent triggering again and corrupting values
+            statsObserver.unobserve(entry.target);
         }
     });
 }, { threshold: 0.5 });
@@ -204,7 +208,7 @@ document.querySelectorAll('.about-stats').forEach(stats => {
     statsObserver.observe(stats);
 });
 
-function animateNumber(element, start, end, duration) {
+function animateNumber(element, start, end, duration, hasPercent) {
     const startTime = performance.now();
     const isDecimal = end % 1 !== 0;
     
@@ -213,7 +217,11 @@ function animateNumber(element, start, end, duration) {
         const progress = Math.min(elapsed / duration, 1);
         
         const current = start + (end - start) * progress;
-        element.textContent = isDecimal ? current.toFixed(2) : Math.floor(current);
+        let formatted = isDecimal ? current.toFixed(2) : Math.floor(current);
+        if (hasPercent) {
+            formatted += '%';
+        }
+        element.textContent = formatted;
         
         if (progress < 1) {
             requestAnimationFrame(updateNumber);
